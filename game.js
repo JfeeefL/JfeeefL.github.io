@@ -37,6 +37,7 @@ function Vec2D(x, y) {
 //====================| vec2D END |=======================//
 
 let arrowVec = new Vec2D(0,0);
+function nullFunction() {}
 
 //====================| MOUSE ACTOR : ID = 0 |=======================//
 
@@ -50,8 +51,8 @@ let mouseAttribute = {
 };
 
 function mouseUpdater (attr) {
-    attr.R += attr.inc;
-    if(attr.R > attr.maxR || attr.r < attr.minR) attr.inc*=-1;
+    attr.r += attr.inc;
+    if(attr.r > attr.maxR || attr.r < attr.minR) attr.inc*=-1;
 }
 
 function mouseRenderer(attr) {
@@ -82,7 +83,7 @@ function arrowRenderer(attr) {
     device.closePath();
 }
 
-activate(new FrameActor(arrowAttribute, function() {}, function () {}));
+activate(new FrameActor(arrowAttribute, nullFunction, nullFunction));
 
 //====================| ARROW ACTOR END : ID = 1 |=======================//
 
@@ -98,5 +99,5 @@ document.addEventListener('mousedown', function (e) {
 });
 
 document.addEventListener('mouseup', function (e) {
-    frameActorList[1].renderer = function () {};
+    frameActorList[1].renderer = nullFunction;
 });
