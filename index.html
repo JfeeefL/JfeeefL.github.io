@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>JfeeefL Station</title>
-    
+    <head>
+        <title>
+            Visual Linear Algebra
+        </title>
 
-  </head>
-  <script src="script.js" async>  </script>
-  <script src="script2.js" async>  </script>
-  <body>
-
-    <h1> Welcome to Jeff Lee's home!</h1>
-	<p>This blog is still under construction. <p>
-  <a href="newpage.html" title="Go to another page">Go</a>
-  <h2>实验功能：</h2>
-  <p id = "psycho" > 人工智能：您好。 </p>
-  <input type="text" class="inputtext">
-  <input type="submit" class="inputsubmit" value="说">
-	<h2>trial function:</h2>
-	<p>DISTURBING BUTTON</p>
-	<button id = "DISTURBING">Click Me!</button>
-  </body>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class = "frame">
+            <span class="panel">
+                <div id = "panel_title">
+                    Visual Linear Algebra
+                </div>
+                <div id = "panel_text">
+                    <p>
+                        In this chapter, we are going to introduce linear algebra to you.
+                        But differently, it is going to be exiting. Because everything is visible!
+                    </p>
+                    <p>
+                        For example:
+                        You can display a matrix like this:
+                        $$A=\left[\begin{matrix} 1 & 0 & 0\\ 0 & 1 & 0\\ 0 & 0 & 1\end{matrix}\right]$$
+                    </p>
+                </div>
+            </span>
+            <span class="panel">
+                <canvas>
+                    Your browser does not even support CANVAS!
+                </canvas>
+            </span>
+        </div>
+        <script type="text/javascript"
+        src="matrix3d.js"></script>
+        <script type="text/javascript"
+                src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+    </body>
 </html>
