@@ -2,8 +2,8 @@
 
 const canvas = document.querySelector('canvas');
 const device = canvas.getContext('2d');
-canvas.width = window.innerWidth * 0.70;
-canvas.height = window.innerHeight * 0.85;
+canvas.width = window.innerWidth * 0.68;
+canvas.height = window.innerHeight * 0.72;
 
 device.fillStyle = "rgb(255,255,255)";
 device.fillRect(0,0,canvas.width, canvas.height);
@@ -74,6 +74,25 @@ function rotationZ(theta) {
     ]);
 }
 
+function rotation(theta, n) {
+    let x = Math.cos(theta), y = Math.sin(theta);
+    return new matrix4([
+        [       n.x*n.x*(1-x)+x, n.x*n.y*(1-x)+n.z*y, n.x*n.z*(1-x)-n.y*y,      0],
+        [   n.x*n.y*(1-x)-n.z*y,     n.y*n.y*(1-x)+x, n.y*n.z*(1-x)+n.x*y,      0],
+        [   n.x*n.z*(1-x)+n.y*y, n.y*n.z*(1-x)-n.x*y,     n.z*n.z*(1-x)+x,      0],
+        [                     0,                   0,                   0,      1]
+    ]);
+}
+
+function translate(v) {
+    return new matrix4([
+        [1,0,0,v.x],
+        [0,1,0,v.y],
+        [0,0,1,v.z],
+        [0,0,0,1]
+    ]);
+}
+
 matrix4.prototype = {
     mul: function (a) {
         let r = new matrix4();
@@ -118,8 +137,17 @@ vector4.prototype = {
 };
 
 let camera = {
-    look_at: new vector3(1,0,0),
-    position: new vector3(-200,0,0),
+    look_at: (new vector3(1,0,0)).normalize(),
+    position: new vector3(-3,0,0),
+    get_horizontal: function() {
+        let horizontal = this.look_at.crs(new vector3(0,0,1));
+        return horizontal.normalize();
+    },
+    get_vertical: function() {
+        let horizontal = this.look_at.crs(new vector3(0,0,1));
+        let vertical = this.look_at.crs(horizontal);
+        return vertical.normalize();
+    },
     point_xy: function(p) {
         let horizontal = this.look_at.crs(new vector3(0,0,1));
         let vertical = this.look_at.crs(horizontal);
@@ -129,7 +157,7 @@ let camera = {
         let len = this.look_at.dot(rel);
         let x = rel.dot(horizontal);
         let y = rel.dot(vertical);
-        return new vector3(x/len*100, - y/len*100, len);
+        return new vector3(x/len*500, - y/len*500, len);
     },
     transform_look_at: function(m) {
         let t = (vector4from3(this.look_at).mul(m)).to3();
@@ -241,12 +269,12 @@ setInterval(function () {
 //top
 surfaceArray.push(
     new item(
-        new vector3(200,0,0),
+        new vector3(2,0,0),
         [
-            new vector3(-100, -100, 100),
-            new vector3(-100, 100, 100),
-            new vector3(100, 100, 100),
-            new vector3(100, -100, 100),
+            new vector3(-1, -1, 1),
+            new vector3(-1, 1, 1),
+            new vector3(1, 1, 1),
+            new vector3(1, -1, 1),
         ],
         "rgba(255,88,88,0.5)"
     )
@@ -254,12 +282,12 @@ surfaceArray.push(
 //bottom
 surfaceArray.push(
     new item(
-        new vector3(200,0,0),
+        new vector3(2,0,0),
         [
-            new vector3(-100, -100, -100),
-            new vector3(-100, 100, -100),
-            new vector3(100, 100, -100),
-            new vector3(100, -100, -100),
+            new vector3(-1, -1, -1),
+            new vector3(-1, 1, -1),
+            new vector3(1, 1, -1),
+            new vector3(1, -1, -1),
         ],
         "rgba(71,220,153,0.5)"
     )
@@ -267,12 +295,12 @@ surfaceArray.push(
 //front
 surfaceArray.push(
     new item(
-        new vector3(200,0,0),
+        new vector3(2,0,0),
         [
-            new vector3(-100, -100, 100),
-            new vector3(-100, 100, 100),
-            new vector3(-100, 100, -100),
-            new vector3(-100, -100, -100),
+            new vector3(-1, -1, 1),
+            new vector3(-1, 1, 1),
+            new vector3(-1, 1, -1),
+            new vector3(-1, -1, -1),
         ],
         "rgba(213,119,229,0.5)"
     )
@@ -280,12 +308,12 @@ surfaceArray.push(
 //back
 surfaceArray.push(
     new item(
-        new vector3(200,0,0),
+        new vector3(2,0,0),
         [
-            new vector3(100, -100, 100),
-            new vector3(100, 100, 100),
-            new vector3(100, 100, -100),
-            new vector3(100, -100, -100),
+            new vector3(1, -1, 1),
+            new vector3(1, 1, 1),
+            new vector3(1, 1, -1),
+            new vector3(1, -1, -1),
         ],
         "rgba(255,128,63,0.5)"
     )
@@ -293,12 +321,12 @@ surfaceArray.push(
 //left
 surfaceArray.push(
     new item(
-        new vector3(200,0,0),
+        new vector3(2,0,0),
         [
-            new vector3(-100, -100, 100),
-            new vector3(-100, -100, -100),
-            new vector3(100, -100, -100),
-            new vector3(100, -100, 100),
+            new vector3(-1, -1, 1),
+            new vector3(-1, -1, -1),
+            new vector3(1, -1, -1),
+            new vector3(1, -1, 1),
         ],
         "rgba(209,255,98,0.5)"
     )
@@ -307,18 +335,18 @@ surfaceArray.push(
 //right
 surfaceArray.push(
     new item(
-        new vector3(200,0,0),
+        new vector3(2,0,0),
         [
-            new vector3(-100, 100, 100),
-            new vector3(-100, 100, -100),
-            new vector3(100, 100, -100),
-            new vector3(100, 100, 100),
+            new vector3(-1, 1, 1),
+            new vector3(-1, 1, -1),
+            new vector3(1, 1, -1),
+            new vector3(1, 1, 1),
         ],
         "rgba(94,197,231,0.5)"
     )
 );
 
-let move_mode
+let move_mode = 'rotate';
 let is_mousedown;
 let mouse_X, mouse_Y;
 
@@ -334,16 +362,34 @@ document.addEventListener('mouseup', function (event) {
     mouse_Y = event.clientY;
 });
 
+let rotateButton = document.querySelector('#rotate');
+let translateButton = document.querySelector('#translate');
+
+rotateButton.style.backgroundColor = 'rgb(206,108,108)';
+
+rotateButton.addEventListener('click', function() {
+    translateButton.style.backgroundColor = '#74c0fd';
+    rotateButton.style.backgroundColor = 'rgb(206,108,108)';
+    move_mode = 'rotate';
+});
+
+translateButton.addEventListener('click', function() {
+    translateButton.style.backgroundColor = 'rgb(206,108,108)';
+    rotateButton.style.backgroundColor = '#74c0fd';
+    move_mode = 'translate'
+});
+
 document.addEventListener('mousemove',function(event) {
-    for (let i in surfaceArray) {
-        surfaceArray[i].transform_vertex(rotationZ(0.1));
-    }
     if(is_mousedown) {
-        if(move_mode === 'translation') {
-         //   camera.translation(event.movementX, event.movementY);
+        if(move_mode === 'translate') {
+            camera.transform_position(translate(camera.get_horizontal().mul(-event.movementX*0.006)));
+            camera.transform_position(translate(camera.get_vertical().mul(event.movementY*0.006)));
         }
         else if(move_mode ==='rotate') {
-         //   camera.rotate(event.movementX, event.movementY);
+
+            camera.transform_look_at(rotationZ(event.movementX*0.001));
+            camera.transform_look_at(rotation(event.movementY*0.001, camera.get_horizontal()));
+
         }
     }
 });
