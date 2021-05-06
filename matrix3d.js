@@ -401,14 +401,19 @@ translateButton.addEventListener('click', translateInteraction );
 
 function dragInteraction(event) {
     if(is_mousedown) {
+        let moveX = event.clientX-mouse_X;
+        let moveY = event.clientY-mouse_Y;
+
+        mouse_X += moveX;
+        mouse_Y += moveY;
         if(move_mode === 'translate') {
-            camera.transform_position(translate(camera.get_horizontal().mul(-event.movementX*0.006)));
-            camera.transform_position(translate(camera.get_vertical().mul(event.movementY*0.006)));
+            camera.transform_position(translate(camera.get_horizontal().mul(-moveX*0.008)));
+            camera.transform_position(translate(camera.get_vertical().mul(moveY*0.008)));
         }
         else if(move_mode ==='rotate') {
 
-            camera.transform_look_at(rotationZ(event.movementX*0.001));
-            camera.transform_look_at(rotation(event.movementY*0.001, camera.get_horizontal()));
+            camera.transform_look_at(rotationZ(moveX*0.002));
+            camera.transform_look_at(rotation(moveY*0.002, camera.get_horizontal()));
 
         }
     }
@@ -416,3 +421,8 @@ function dragInteraction(event) {
 
 document.addEventListener('mousemove',dragInteraction);
 document.addEventListener('ontouchmove', dragInteraction);
+
+window.onresize = function() {
+    canvas.width = window.innerWidth * 0.68;
+    canvas.height = window.innerHeight * 0.72;
+}

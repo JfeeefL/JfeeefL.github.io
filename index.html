@@ -4,7 +4,15 @@
         <title>
             Visual Linear Algebra
         </title>
-
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+            }
+        });
+        </script>
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
@@ -26,6 +34,11 @@
                 Drag the screen to move around.
                 <br><br>
                 Click '<b>Translate</b>' and '<b>Rotate</b>' to switch between two mode.
+                </p>
+                <hr>
+                <p>
+                    Sample application for $\LaTeX$ expression:
+                    $$A=\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}$$
                 </p>
             </span>
             <span id = "rotate">
@@ -51,7 +64,7 @@
         <script type="text/javascript"
         src="matrix3d.js"></script>
         <script type="text/javascript"
-                src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+                src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
         </script>
     </body>
 </html>
