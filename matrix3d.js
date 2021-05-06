@@ -350,28 +350,28 @@ let move_mode = 'rotate';
 let is_mousedown;
 let mouse_X, mouse_Y;
 
-document.addEventListener('mousedown', function (event) {
+canvas.addEventListener('mousedown', function (event) {
     is_mousedown = true;
-    mouse_X = event.clientX;
-    mouse_Y = event.clientY;
+    mouse_X = event.pageX;
+    mouse_Y = event.pageY;
 });
 
-document.addEventListener('mouseup', function (event) {
+canvas.addEventListener('mouseup', function (event) {
     is_mousedown = false;
-    mouse_X = event.clientX;
-    mouse_Y = event.clientY;
+    mouse_X = event.pageX;
+    mouse_Y = event.pageY;
 });
 
-document.addEventListener('touchstart', function (event) {
+canvas.addEventListener('touchstart', function (event) {
     is_mousedown = true;
-    mouse_X = event.clientX;
-    mouse_Y = event.clientY;
+    mouse_X = event.pageX;
+    mouse_Y = event.pageY;
 });
 
-document.addEventListener('touchend', function (event) {
+canvas.addEventListener('touchend', function (event) {
     is_mousedown = false;
-    mouse_X = event.clientX;
-    mouse_Y = event.clientY;
+    mouse_X = event.pageX;
+    mouse_Y = event.pageY;
 })
 
 document
@@ -401,8 +401,8 @@ translateButton.addEventListener('click', translateInteraction );
 
 function dragInteraction(event) {
     if(is_mousedown) {
-        let moveX = event.clientX-mouse_X;
-        let moveY = event.clientY-mouse_Y;
+        let moveX = event.pageX-mouse_X;
+        let moveY = event.pageY-mouse_Y;
 
         mouse_X += moveX;
         mouse_Y += moveY;
@@ -420,7 +420,7 @@ function dragInteraction(event) {
 }
 
 document.addEventListener('mousemove',dragInteraction);
-document.addEventListener('ontouchmove', dragInteraction);
+canvas.addEventListener('ontouchmove', dragInteraction);
 
 window.onresize = function() {
     canvas.width = window.innerWidth * 0.68;
