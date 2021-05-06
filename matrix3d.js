@@ -362,6 +362,20 @@ document.addEventListener('mouseup', function (event) {
     mouse_Y = event.clientY;
 });
 
+document.addEventListener('touchstart', function (event) {
+    is_mousedown = true;
+    mouse_X = event.clientX;
+    mouse_Y = event.clientY;
+});
+
+document.addEventListener('touchend', function (event) {
+    is_mousedown = false;
+    mouse_X = event.clientX;
+    mouse_Y = event.clientY;
+})
+
+document
+
 let rotateButton = document.querySelector('#rotate');
 let translateButton = document.querySelector('#translate');
 
@@ -380,10 +394,10 @@ function translateInteraction() {
 }
 
 rotateButton.addEventListener('click', rotateInteraction );
-rotateButton.addEventListener('touchenter', rotateInteraction );
+//rotateButton.addEventListener('touchenter', rotateInteraction );
 
 translateButton.addEventListener('click', translateInteraction );
-translateButton.addEventListener('touchleave', translateInteraction );
+//translateButton.addEventListener('touchleave', translateInteraction );
 
 function dragInteraction(event) {
     if(is_mousedown) {
@@ -401,4 +415,4 @@ function dragInteraction(event) {
 }
 
 document.addEventListener('mousemove',dragInteraction);
-document.addEventListener('touchmove', dragInteraction);
+document.addEventListener('ontouchmove', dragInteraction);
