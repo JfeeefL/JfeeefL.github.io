@@ -367,19 +367,25 @@ let translateButton = document.querySelector('#translate');
 
 rotateButton.style.backgroundColor = 'rgb(206,108,108)';
 
-rotateButton.addEventListener('click', function() {
+function rotateInteraction() {
     translateButton.style.backgroundColor = '#74c0fd';
     rotateButton.style.backgroundColor = 'rgb(206,108,108)';
     move_mode = 'rotate';
-});
+}
 
-translateButton.addEventListener('click', function() {
+function translateInteraction() {
     translateButton.style.backgroundColor = 'rgb(206,108,108)';
     rotateButton.style.backgroundColor = '#74c0fd';
     move_mode = 'translate'
-});
+}
 
-document.addEventListener('mousemove',function(event) {
+rotateButton.addEventListener('click', rotateInteraction );
+rotateButton.addEventListener('touchenter', rotateInteraction );
+
+translateButton.addEventListener('click', translateInteraction );
+translateButton.addEventListener('touchleave', translateInteraction );
+
+function dragInteraction(event) {
     if(is_mousedown) {
         if(move_mode === 'translate') {
             camera.transform_position(translate(camera.get_horizontal().mul(-event.movementX*0.006)));
@@ -392,4 +398,7 @@ document.addEventListener('mousemove',function(event) {
 
         }
     }
-});
+}
+
+document.addEventListener('mousemove',dragInteraction);
+document.addEventListener('touchmove', dragInteraction);
