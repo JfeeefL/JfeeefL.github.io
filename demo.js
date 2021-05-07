@@ -98,7 +98,9 @@ let corner = new interactiveEntity(
     },
     function(x, y) {
         cube.transform_vertex(rotation(x*0.001,camera.get_vertical()));
+        cube.transform_vertex(rotation(y*0.001,camera.get_horizontal()));
         this.transform_vertex(rotation(x*0.001,camera.get_vertical()));
+        this.transform_vertex(rotation(y*0.001,camera.get_horizontal()));
     },
     function (x,y) {
         this.style = "rgba(0,0,0,0)";
