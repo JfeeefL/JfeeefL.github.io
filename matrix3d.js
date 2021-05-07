@@ -3,13 +3,27 @@
 const canvas = document.querySelector('canvas');
 const device = canvas.getContext('2d');
 canvas.width = window.innerWidth * 0.68;
-canvas.height = window.innerHeight * 0.72;
+canvas.height = window.innerHeight * 0.80-20;
 
 device.fillStyle = "rgb(255,255,255)";
 device.fillRect(0,0,canvas.width, canvas.height);
 
 function vector2(x, y) {
     this.x = x; this.y = y;
+}
+
+vector2.prototype = {
+    copy: function () { return new vector2(this.x, this.y); },
+    sum: function (v) { return new vector2(this.x + v.x, this.y + v.y); },
+    opp: function() { return new vector2(- this.x, - this.y) },
+    sub: function (v) { return this.sum(v.opp()); },
+    dot: function (v) { return this.x * v.x + this.y * v.y; },
+    mul: function(a) { return new vector2(this.x * a, this.y * a);},
+    crs: function(v) { return this.x * v.y - this.y * v.x;},
+    normalize : function () {
+        let t = Math.sqrt(this.x*this.x + this.y*this.y);
+        return new vector2(this.x / t, this.y / t);
+    }
 }
 
 function vector3(x, y, z) {
@@ -170,11 +184,13 @@ let camera = {
     }
 };
 
-let screenCenter = new vector3(canvas.width/2, canvas.height/2,0);
+let screenCenter = function() {
+    return new vector3(canvas.width/2, canvas.height/2,0);
+}
 
 let screen = {
     draw_point: function(p, radius, color) {
-        p = p.sum(screenCenter);
+        p = p.sum(screenCenter());
         device.beginPath();
         device.arc(p.x, p.y, radius, 0, Math.PI * 2);
         device.fillStyle  = color;
@@ -182,8 +198,8 @@ let screen = {
         device.closePath();
     },
     draw_line: function (p1, p2, color) {
-        p1 = p1.sum(screenCenter);
-        p2 = p2.sum(screenCenter);
+        p1 = p1.sum(screenCenter());
+        p2 = p2.sum(screenCenter());
         device.beginPath();
         device.fillStyle = color;
         device.moveTo(p1.x, p1.y);
@@ -193,7 +209,7 @@ let screen = {
     },
     draw_poly: function (arr, color) {
         for(let i = 0; i < arr.length; i ++) {
-            arr[i] = arr[i].sum(screenCenter);
+            arr[i] = arr[i].sum(screenCenter());
         }
         device.beginPath();
         device.fillStyle = color;
@@ -206,10 +222,25 @@ let screen = {
     }
 };
 
-function item(position, vertex, style) {
+let interactiveArray = new Array();
+
+function item(position,
+              vertex,
+              style = 'rgba(0,0,0,0.1)',
+              fix2d = false,
+              radius = 10,
+              onClick = function(x,y){},
+              onMove = function(x,y){},
+              onRelease = function(x,y) {}) {
     this.position = position;
     this.vertex = vertex;
     this.style = style;
+    if(fix2d) this.fix2d = fix2d;
+    this.radius = radius;
+    this.isClicked = false;
+    this.onClick = onClick;
+    this.onMove = onMove;
+    this.onRelease = onRelease;
 }
 
 item.prototype = {
@@ -218,12 +249,65 @@ item.prototype = {
           this.vertex[i] = vector4from3(this.vertex[i]).mul(m).to3();
       }
   },
-  transform_pos: function(m) {
+  transform_position: function(m) {
       this.position = (vector4from3(this.position).mul(m)).to3();
   }
 };
 
+function interactiveEntity(position,
+                           vertexArray,
+                           style = 'rgba(0,0,0,0.1)',
+                           fix2d = false,
+                           radius = 10,
+                           onClick = function(x,y){},
+                           onMove = function(x,y) {},
+                           onRelease = function (x,y) {}
+                           ) {
+    this.id = new Array();
+    for(let i of vertexArray) {
+        this.id.push(interactiveArray.length);
+        interactiveArray.push(
+            new item(position, vertexArray, style, fix2d, radius, onClick, onMove, onRelease)
+        );
+    }
+}
+
+interactiveEntity.prototype = {
+    transform_vertex: function (m) {
+        for(let i of this.id) {
+            interactiveArray[i].transform_vertex(m);
+        }
+    },
+    transform_position(m) {
+        for(let i of this.id) {
+            interactiveArray[i].transform_position(m);
+        }
+    }
+};
+
 let surfaceArray = new Array();
+
+function surfaceEntity(array) {
+    this.id = new Array();
+    for(let i of array) {
+        this.id.push(surfaceArray.length);
+        surfaceArray.push(i);
+    }
+}
+
+surfaceEntity.prototype = {
+    transform_vertex: function (m) {
+        for(let i of this.id) {
+            surfaceArray[i].transform_vertex(m);
+        }
+    },
+    transform_position(m) {
+        for(let i of this.id) {
+            surfaceArray[i].transform_position(m);
+        }
+    }
+};
+
 
 setInterval(function () {
     device.fillStyle = "rgb(255,255,255)";
@@ -264,117 +348,75 @@ setInterval(function () {
             screen.draw_poly(i.vertex, i.style);
         }
     }
-},10);
-//cube
-//top
-surfaceArray.push(
-    new item(
-        new vector3(2,0,0),
-        [
-            new vector3(-1, -1, 1),
-            new vector3(-1, 1, 1),
-            new vector3(1, 1, 1),
-            new vector3(1, -1, 1),
-        ],
-        "rgba(255,88,88,0.5)"
-    )
-);
-//bottom
-surfaceArray.push(
-    new item(
-        new vector3(2,0,0),
-        [
-            new vector3(-1, -1, -1),
-            new vector3(-1, 1, -1),
-            new vector3(1, 1, -1),
-            new vector3(1, -1, -1),
-        ],
-        "rgba(71,220,153,0.5)"
-    )
-);
-//front
-surfaceArray.push(
-    new item(
-        new vector3(2,0,0),
-        [
-            new vector3(-1, -1, 1),
-            new vector3(-1, 1, 1),
-            new vector3(-1, 1, -1),
-            new vector3(-1, -1, -1),
-        ],
-        "rgba(213,119,229,0.5)"
-    )
-);
-//back
-surfaceArray.push(
-    new item(
-        new vector3(2,0,0),
-        [
-            new vector3(1, -1, 1),
-            new vector3(1, 1, 1),
-            new vector3(1, 1, -1),
-            new vector3(1, -1, -1),
-        ],
-        "rgba(255,128,63,0.5)"
-    )
-);
-//left
-surfaceArray.push(
-    new item(
-        new vector3(2,0,0),
-        [
-            new vector3(-1, -1, 1),
-            new vector3(-1, -1, -1),
-            new vector3(1, -1, -1),
-            new vector3(1, -1, 1),
-        ],
-        "rgba(209,255,98,0.5)"
-    )
-);
 
-//right
-surfaceArray.push(
-    new item(
-        new vector3(2,0,0),
-        [
-            new vector3(-1, 1, 1),
-            new vector3(-1, 1, -1),
-            new vector3(1, 1, -1),
-            new vector3(1, 1, 1),
-        ],
-        "rgba(94,197,231,0.5)"
-    )
-);
+    for(let i of interactiveArray) {
+        if(i.radius === 0) continue;
+        if(i.fix2d === true) {
+            for(let j of i.vertex) {
+                screen.draw_point(j.sum(i.position), i.radius, i.style);
+            }
+        } else {
+            for(let j of i.vertex) {
+                screen.draw_point(camera.point_xy(j.sum(i.position)), i.radius, i.style);
+            }
+        }
+    }
+
+},10);
 
 let move_mode = 'rotate';
 let is_mousedown;
 let mouse_X, mouse_Y;
+let canvasX, canvasY;
 
-canvas.addEventListener('mousedown', function (event) {
+function mousedownInteraction(event) {
     is_mousedown = true;
     mouse_X = event.pageX;
     mouse_Y = event.pageY;
-});
 
-canvas.addEventListener('mouseup', function (event) {
+    let click = canvas.getBoundingClientRect();
+    canvasY = event.clientY - click.top;
+    canvasX = event.clientX - click.left;
+    for(let i of interactiveArray) {
+        i.isClicked = false;
+        for(let j of i.vertex) {
+            let t = camera.point_xy(j.sum(i.position)).sum(screenCenter());
+            let dx = (t.x - canvasX);
+            let dy = (t.y - canvasY)
+            if(dx*dx + dy*dy <= i.radius * i.radius) {
+                i.isClicked = true;
+                break;
+            }
+        }
+        if(i.isClicked === true) {
+            i.onClick(canvasX, canvasY);
+        }
+    }
+}
+
+function mouseupInteraction(event) {
     is_mousedown = false;
     mouse_X = event.pageX;
     mouse_Y = event.pageY;
-});
 
-canvas.addEventListener('touchstart', function (event) {
-    is_mousedown = true;
-    mouse_X = event.pageX;
-    mouse_Y = event.pageY;
-});
+    let click = canvas.getBoundingClientRect();
+    canvasY = event.clientY - click.top;
+    canvasX = event.clientX - click.left;
+    for(let i of interactiveArray) {
+        if(i.isClicked === true) {
+            i.onRelease(canvasX, canvasY);
+        }
+        i.isClicked = false;
+    }
+}
 
-canvas.addEventListener('touchend', function (event) {
-    is_mousedown = false;
-    mouse_X = event.pageX;
-    mouse_Y = event.pageY;
-})
+canvas.addEventListener('mousedown', mousedownInteraction );
 
-document
+document.addEventListener('mouseup', mouseupInteraction );
+
+canvas.addEventListener('touchstart', mousedownInteraction);
+
+document.addEventListener('touchend', mouseupInteraction);
 
 let rotateButton = document.querySelector('#rotate');
 let translateButton = document.querySelector('#translate');
@@ -406,6 +448,20 @@ function dragInteraction(event) {
 
         mouse_X += moveX;
         mouse_Y += moveY;
+
+        canvasX += moveX;
+        canvasY += moveY;
+
+        let click = false;
+
+        for(let i of interactiveArray) {
+            if(i.isClicked) {
+                i.onMove(moveX, moveY);
+                click = true;
+            }
+        }
+        if(click) return;
+
         if(move_mode === 'translate') {
             camera.transform_position(translate(camera.get_horizontal().mul(-moveX*0.008)));
             camera.transform_position(translate(camera.get_vertical().mul(moveY*0.008)));
@@ -424,5 +480,5 @@ canvas.addEventListener('ontouchmove', dragInteraction);
 
 window.onresize = function() {
     canvas.width = window.innerWidth * 0.68;
-    canvas.height = window.innerHeight * 0.72;
+    canvas.height = window.innerHeight * 0.80-20;
 }

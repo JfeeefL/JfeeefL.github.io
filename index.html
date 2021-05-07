@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
     <head>
         <title>
@@ -24,9 +25,10 @@
                 </b>
                 </p>
             </span>
-            </span>
             <span id = "panel_text">
+                <div id = "text">
                 <p>
+                    <h3>Demo</h3>
                 This is a project of the visualization of <b>linear algebra</b>, which aims to use intuitive and interactive graphs to illustrate linear algebra.
                 In this way, students will have a better understanding of linear algebra.
                 <hr>
@@ -36,10 +38,26 @@
                 Click '<b>Translate</b>' and '<b>Rotate</b>' to switch between two mode.
                 </p>
                 <hr>
+                    <p>
+                        Also, you can drag <b>the corner of the cube</b> to rotate it.
+                        It means that this system also allow you to interact with the objects in the space of display.
+                    </p>
+                    <hr>
                 <p>
                     Sample application for $\LaTeX$ expression:
                     $$A=\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}$$
                 </p>
+                </div>
+                <div id = "button">
+                    <span>
+                        <b>
+                        Previous
+                        </b>
+                    </span>
+                    <span>
+                        <b>Next</b>
+                    </span>
+                </div>
             </span>
             <span id = "rotate">
                 <p>
@@ -62,9 +80,12 @@
             </span>
         </div>
         <script type="text/javascript"
+                src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+        <script type="text/javascript"
         src="matrix3d.js"></script>
         <script type="text/javascript"
-                src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+                src="demo.js">
         </script>
     </body>
 </html>

@@ -7,24 +7,48 @@
 
 div #panel_text{
     padding: 2em;
+    display: grid;
+    grid-template-rows: auto 2em;
+    grid-gap: 10px;
 }
 
-#panel_text, .panel, #rotate, #translate {
+#panel_text, .panel, #rotate, #translate, #button>span {
     border-radius: 10px;
-    background-color: rgb(230, 244, 255);
-    box-shadow: 3px 3px 3px #888888;
+    background-color: #d7edff;
+    box-shadow: 3px 3px 10px #393939;
+}
+
+#panel_text {
+    background-color: #d7edff;
+    color: black;
 }
 
 #panel_title {
     grid-column: 1;
     grid-row: 1;
 }
+#text{
+    padding: 1em;
+    box-shadow: -1px -1px 10px 1px #96b2ce inset;
+    border-radius: 10px;
+/*    overflow-y: scroll;*/
+}
 
 #panel_text {
     grid-column: 1;
     grid-row: 2;
 }
-
+#button {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1ex;
+}
+#button > span {
+    color: white;
+    background-color: #4aaefd;
+    text-align: center;
+    box-shadow: 1px 1px 5px 1px #186ab6;
+}
 .panel {
     grid-row: 2;
     grid-column-start: 2;
@@ -51,13 +75,13 @@ div #panel_text{
 #panel_title {
     background-color: #399ddb;
     border-radius: 10px;
-    box-shadow: 2px 2px 2px #888888;
+    box-shadow: 2px 2px 10px #888888;
     text-align: center;
     color: whitesmoke;
 }
 
 canvas {
     margin: 2em;
-    box-shadow: 3px 3px 3px #888888;
+    box-shadow: 3px 3px 10px #393939;
     border-radius: 10px;
 }
