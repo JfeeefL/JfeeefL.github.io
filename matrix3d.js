@@ -410,7 +410,8 @@ let is_mousedown;
 let mouse_X, mouse_Y;
 let canvasX, canvasY;
 
-function mousedownInteraction(event) {
+function mousedownInteractionPC(event) {
+
     is_mousedown = true;
     mouse_X = event.pageX;
     mouse_Y = event.pageY;
@@ -435,7 +436,34 @@ function mousedownInteraction(event) {
     }
 }
 
-function mouseupInteraction(event) {
+function mousedownInteractionMobile(event) {
+
+    let touch = event.touches[0];
+    is_mousedown = true;
+    mouse_X = touch.pageX;
+    mouse_Y = touch.pageY;
+
+    let click = canvas.getBoundingClientRect();
+    canvasY = touch.clientY - click.top;
+    canvasX = touch.clientX - click.left;
+    for(let i of interactiveArray) {
+        i.isClicked = false;
+        for(let j of i.vertex) {
+            let t = camera.point_xy(j.sum(i.position)).sum(screenCenter());
+            let dx = (t.x - canvasX);
+            let dy = (t.y - canvasY)
+            if(dx*dx + dy*dy <= i.radius * i.radius) {
+                i.isClicked = true;
+                break;
+            }
+        }
+        if(i.isClicked === true) {
+            i.onClick(canvasX, canvasY);
+        }
+    }
+}
+
+function mouseupInteractionPC(event) {
     is_mousedown = false;
     mouse_X = event.pageX;
     mouse_Y = event.pageY;
@@ -451,13 +479,30 @@ function mouseupInteraction(event) {
     }
 }
 
-canvas.addEventListener('mousedown', mousedownInteraction );
+function mouseupInteractionMobile(event) {
+    let touch = event.touches[0];
+    is_mousedown = false;
+    mouse_X = touch.pageX;
+    mouse_Y = touch.pageY;
 
-document.addEventListener('mouseup', mouseupInteraction );
+    let click = canvas.getBoundingClientRect();
+    canvasY = touch.clientY - click.top;
+    canvasX = touch.clientX - click.left;
+    for(let i of interactiveArray) {
+        if(i.isClicked === true) {
+            i.onRelease(canvasX, canvasY);
+        }
+        i.isClicked = false;
+    }
+}
 
-canvas.addEventListener('touchstart', mousedownInteraction);
+canvas.addEventListener('mousedown', mousedownInteractionPC );
 
-document.addEventListener('touchend', mouseupInteraction);
+document.addEventListener('mouseup', mouseupInteractionPC );
+
+canvas.addEventListener('touchstart', mousedownInteractionMobile);
+
+document.addEventListener('touchend', mouseupInteractionMobile);
 
 let rotateButton = document.querySelector('#rotate');
 let translateButton = document.querySelector('#translate');
@@ -482,7 +527,7 @@ rotateButton.addEventListener('click', rotateInteraction );
 translateButton.addEventListener('click', translateInteraction );
 //translateButton.addEventListener('touchleave', translateInteraction );
 
-function dragInteraction(event) {
+function dragInteractionPC(event) {
     if(is_mousedown) {
         let moveX = event.pageX-mouse_X;
         let moveY = event.pageY-mouse_Y;
@@ -516,8 +561,43 @@ function dragInteraction(event) {
     }
 }
 
-document.addEventListener('mousemove',dragInteraction);
-canvas.addEventListener('ontouchmove', dragInteraction);
+function dragInteractionMobile(event) {
+    if(is_mousedown) {
+        let touch = event.touches[0];
+        let moveX = touch.pageX-mouse_X;
+        let moveY = touch.pageY-mouse_Y;
+
+        mouse_X += moveX;
+        mouse_Y += moveY;
+
+        canvasX += moveX;
+        canvasY += moveY;
+
+        let click = false;
+
+        for(let i of interactiveArray) {
+            if(i.isClicked) {
+                i.onMove(moveX, moveY);
+                click = true;
+            }
+        }
+        if(click) return;
+
+        if(move_mode === 'translate') {
+            camera.transform_position(translate(camera.get_horizontal().mul(-moveX*0.008)));
+            camera.transform_position(translate(camera.get_vertical().mul(moveY*0.008)));
+        }
+        else if(move_mode ==='rotate') {
+
+            camera.transform_look_at(rotationZ(moveX*0.002));
+            camera.transform_look_at(rotation(moveY*0.002, camera.get_horizontal()));
+
+        }
+    }
+}
+
+document.addEventListener('mousemove',dragInteractionPC);
+canvas.addEventListener('ontouchmove', dragInteractionMobile);
 
 window.onresize = function() {
     canvas.width = window.innerWidth * 0.68;
