@@ -241,6 +241,9 @@ function item(position,
     this.onClick = onClick;
     this.onMove = onMove;
     this.onRelease = onRelease;
+    this.trace = false;
+    this.traceStyle = "rgba(255,0,0,0.16)"
+    this.traceRadius = 5;
 }
 
 item.prototype = {
@@ -251,7 +254,13 @@ item.prototype = {
   },
   transform_position: function(m) {
       this.position = (vector4from3(this.position).mul(m)).to3();
-  }
+  },
+    traceOn: function(traceStyle, traceRadius)
+    {
+        this.trace = true;
+        this.traceStyle = traceStyle;
+        this.traceRadius = traceRadius;
+    }
 };
 
 function interactiveEntity(position,
@@ -263,25 +272,21 @@ function interactiveEntity(position,
                            onMove = function(x,y) {},
                            onRelease = function (x,y) {}
                            ) {
-    this.id = new Array();
-    for(let i of vertexArray) {
-        this.id.push(interactiveArray.length);
-        interactiveArray.push(
-            new item(position, vertexArray, style, fix2d, radius, onClick, onMove, onRelease)
-        );
-    }
+    this.id = interactiveArray.length;
+    interactiveArray.push(
+        new item(position, vertexArray, style, fix2d, radius, onClick, onMove, onRelease)
+    );
 }
 
 interactiveEntity.prototype = {
     transform_vertex: function (m) {
-        for(let i of this.id) {
-            interactiveArray[i].transform_vertex(m);
-        }
+        interactiveArray[this.id].transform_vertex(m);
     },
-    transform_position(m) {
-        for(let i of this.id) {
-            interactiveArray[i].transform_position(m);
-        }
+    transform_position: function(m) {
+        interactiveArray[this.id].transform_position(m);
+    },
+    traceOn: function (traceStyle, traceRadius) {
+        interactiveArray[this.id].traceOn(traceStyle, traceRadius);
     }
 };
 
@@ -307,7 +312,7 @@ surfaceEntity.prototype = {
         }
     }
 };
-
+let traceSet = new Set();
 
 setInterval(function () {
     device.fillStyle = "rgb(255,255,255)";
@@ -353,11 +358,47 @@ setInterval(function () {
         if(i.radius === 0) continue;
         if(i.fix2d === true) {
             for(let j of i.vertex) {
-                screen.draw_point(j.sum(i.position), i.radius, i.style);
+                let t = j.sum(i.position);
+                screen.draw_point(t, i.radius, i.style);
+                if(i.trace === true && !traceSet.has(
+                    Math.floor(t.x*10).toString()+","+
+                    Math.floor(t.y*10).toString()+","+
+                    Math.floor(t.z*10).toString())) {
+                    traceSet.add(Math.floor(t.x*10).toString()+","+
+                        Math.floor(t.y*10).toString()+","+
+                        Math.floor(t.z*10).toString());
+                    surfaceArray.push(
+                        new item(
+                            t,
+                            [new vector3(0,0,0)],
+                            i.traceStyle,
+                            false,
+                            i.traceRadius
+                        )
+                    );
+                }
             }
         } else {
             for(let j of i.vertex) {
-                screen.draw_point(camera.point_xy(j.sum(i.position)), i.radius, i.style);
+                let t = j.sum(i.position);
+                screen.draw_point(camera.point_xy(t), i.radius, i.style);
+                if(i.trace === true && !traceSet.has(
+                    Math.floor(t.x*10).toString()+","+
+                    Math.floor(t.y*10).toString()+","+
+                    Math.floor(t.z*10).toString())) {
+                    traceSet.add(Math.floor(t.x*10).toString()+","+
+                        Math.floor(t.y*10).toString()+","+
+                        Math.floor(t.z*10).toString());
+                    surfaceArray.push(
+                        new item(
+                            t,
+                            [new vector3(0,0,0)],
+                            i.traceStyle,
+                            false,
+                            i.traceRadius
+                        )
+                    );
+                }
             }
         }
     }

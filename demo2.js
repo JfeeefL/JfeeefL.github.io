@@ -106,3 +106,5 @@ let corner = new interactiveEntity(
         this.style = "rgba(0,0,0,0)";
     }
 );
+
+corner.traceOn("rgba(255,0,0,0.16)", 5);

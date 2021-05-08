@@ -12,7 +12,7 @@ div #panel_text{
     grid-gap: 10px;
 }
 
-#panel_text, .panel, #rotate, #translate, #button>span {
+#panel_text, .panel, #rotate, #translate, #button>a {
     border-radius: 10px;
     background-color: #d7edff;
     box-shadow: 3px 3px 10px #393939;
@@ -43,7 +43,7 @@ div #panel_text{
     grid-template-columns: 1fr 1fr;
     grid-gap: 1ex;
 }
-#button > span {
+#button > a {
     color: white;
     background-color: #4aaefd;
     text-align: center;
