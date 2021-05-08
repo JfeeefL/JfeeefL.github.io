@@ -597,7 +597,7 @@ function dragInteractionMobile(event) {
 }
 
 document.addEventListener('mousemove',dragInteractionPC);
-canvas.addEventListener('ontouchmove', dragInteractionMobile);
+canvas.addEventListener('touchmove', dragInteractionMobile);
 
 window.onresize = function() {
     canvas.width = window.innerWidth * 0.68;
