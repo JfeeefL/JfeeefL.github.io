@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+            Visual Linear Algebra
+        </title>
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+            }
+        });
+        </script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class = "frame">
+            <span id = "panel_title">
+                <p>
+                <b>
+                Visual Linear Algebra
+                </b>
+                </p>
+            </span>
+            <span id = "panel_text">
+                <div id = "text">
+                <p>
+                    <h3>A one to one mapping from complex plane to Riemann sphere</h3>
+                    $$x_{3}=\frac{|z|^2-1}{|z|^2+1};$$
+                    $$x_{2}=\frac{z-\bar z } {1+|z|^2};$$
+                    $$x_{1}=\frac{z+\bar z}{1+|z|^2}$$
+                </p>
+                </div>
+                <div id = "button">
+                    <a href = "demo2.html">
+                    <span>
+                        <b>Prev</b>
+                    </span>
+                    </a>
+                </div>
+            </span>
+            <span id = "rotate">
+                <p>
+                <b>
+                Rotate
+                </b>
+                </p>
+            </span>
+            <span id = "translate">
+                <p>
+                <b>
+                Translate
+                </b>
+                </p>
+            </span>
+            <span class="panel">
+                <canvas>
+                    Your browser does not even support CANVAS!
+                </canvas>
+            </span>
+        </div>
+        <script type="text/javascript"
+                src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
+        <script type="text/javascript"
+        src="matrix3d.js"></script>
+        <script type="text/javascript"
+                src="demo  ball.js">
+        </script>
+    </body>
+</html>
